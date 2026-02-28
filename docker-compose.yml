@@ -1,0 +1,12 @@
+services:
+  agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-agent-toolbox:latest
+    container_name: ai-agent-toolbox
+    tty: true
+    stdin_open: true
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
