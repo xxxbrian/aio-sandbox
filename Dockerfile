@@ -9,6 +9,7 @@ ARG USER_GID=1000
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     ca-certificates \
+    build-essential \
     curl \
     wget \
     git \
@@ -20,6 +21,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     p7zip-full \
     xz-utils \
     zstd \
+    libssl-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libffi-dev \
+    liblzma-dev \
+    tk-dev \
     gnupg \
     dirmngr \
     sqlite3 \
@@ -70,9 +79,10 @@ WORKDIR /workspace
 # Install runtime toolchains defined in mise.toml.
 USER ${USERNAME}
 COPY --chown=${USERNAME}:${USERNAME} mise.toml /workspace/mise.toml
-RUN mise trust /workspace/mise.toml \
-    && mise install \
-    && mise use -g node@24 python@3.13 go@latest bun@latest pnpm@10
+RUN MISE_JOBS=1 mise trust /workspace/mise.toml \
+    && MISE_JOBS=1 mise settings set python.compile false \
+    && MISE_JOBS=1 mise install \
+    && MISE_JOBS=1 mise use -g node@24 python@3.13 go@latest bun@latest pnpm@10
 
 # Make Chromium path explicit for automation tools.
 ENV CHROME_BIN=/usr/bin/chromium
