@@ -1,0 +1,57 @@
+FROM debian:bookworm-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    bash \
+    ca-certificates \
+    build-essential \
+    curl \
+    wget \
+    git \
+    ripgrep \
+    fd-find \
+    jq \
+    zip \
+    unzip \
+    p7zip-full \
+    xz-utils \
+    zstd \
+    libssl-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    libffi-dev \
+    liblzma-dev \
+    tk-dev \
+    gnupg \
+    dirmngr \
+    sqlite3 \
+    ffmpeg \
+    imagemagick \
+    poppler-utils \
+    python3 \
+    python3-venv \
+    python3-pip \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN ln -sf /usr/bin/fdfind /usr/local/bin/fd \
+    && mkdir -p /data /opt/mise-data /etc/mise \
+    && printf '%s\n' 'export PATH="/opt/mise-data/shims:$PATH"' > /etc/profile.d/mise-path.sh
+
+ENV MISE_DATA_DIR=/opt/mise-data
+ENV PATH=/usr/local/bin:/opt/mise-data/shims:${PATH}
+
+RUN curl -fsSL https://mise.run | sh \
+    && mv /root/.local/bin/mise /usr/local/bin/mise
+
+COPY mise.slim.toml /etc/mise/config.toml
+
+RUN mise trust /etc/mise/config.toml \
+    && mise settings set python.compile false \
+    && MISE_JOBS=1 mise install \
+    && mise reshim
+
+WORKDIR /data

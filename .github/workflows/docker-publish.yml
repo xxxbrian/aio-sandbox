@@ -142,3 +142,16 @@ jobs:
             ${{ github.event.inputs.push_latest == 'true' && format('{0}:latest', steps.prep.outputs.image) || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Build and push slim
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.slim
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ steps.prep.outputs.image }}:${{ steps.version.outputs.tag }}-slim
+            ${{ github.event.inputs.push_latest == 'true' && format('{0}:slim', steps.prep.outputs.image) || '' }}
+          cache-from: type=gha,scope=slim
+          cache-to: type=gha,mode=max,scope=slim
