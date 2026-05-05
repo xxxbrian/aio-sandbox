@@ -82,7 +82,7 @@ COPY --chown=${USERNAME}:${USERNAME} mise.toml /workspace/mise.toml
 RUN MISE_JOBS=1 mise trust /workspace/mise.toml \
     && MISE_JOBS=1 mise settings set python.compile false \
     && MISE_JOBS=1 mise install \
-    && MISE_JOBS=1 mise use -g node@24 python@3.13 go@latest bun@latest pnpm@10
+    && MISE_JOBS=1 mise use -g node@24 python@3.13 go@latest bun@latest
 
 # Make Chromium path explicit for automation tools.
 ENV CHROME_BIN=/usr/bin/chromium
